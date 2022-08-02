@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Jogo memória</title>
+    <style>
+        form {
+            background: black;
+            color: white;
+            padding: 1em;
+        }
+
+        #grid {
+
+        }
+
+        .grid-row {
+            margin: 1em;
+        }
+
+        .grid-card {
+            background-color: gray;
+            margin: 1em;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+</head>
+<body>
+    <h1>Memory Game</h1>
+    <div>
+        <form>
+            <label>Who is playing?</label><br>
+            <input type="text" required placeholder="Name" id="playerName"><br>
+
+            <label>Dificuldade</label><br>
+            <button type="button" class="level" value="easy">Easy 3 x 4</button><br>
+            <button type="button" class="level" value="medium">Medium 4 x 4</button><br>
+            <button type="button" class="level" value="advanced">Advanced 4 x 5</button><br>
+
+            <button type="button" id="startButton">Play!</button>
+        </form>
+    </div>
+</body>
+
+<script>
+    let startButton = $('#startButton');
+    let playerName = $('#playerName');
+    let body = $('body');
+    let level = $('.level');
+
+    // ### Read input values and display results
+    startButton.click(function() {
+        let playerNameValue = playerName.val();
+        let levelValue = level.val();
+        let formValidity = true;
+
+        // ## Check form validity
+        /*if(!(playerNameValue[0].checkValidity() || levelValue[0].checkValidity())) {
+            nome.addClass("is-invalid");
+            formValidity = false;
+        }*/
+
+        if(formValidity) {
+            body.append(`<div>
+                <h2>Welcome ${playerNameValue}</h2>
+                <h3>Current level: ${levelValue}</h3>
+            </div>`)
+
+            // # Clear input:
+            playerName.val('');
+            // TODO: disabled button.
+
+            // # Show cards:
+            displayCards(getCardsRows(levelValue), getCardsColumns(levelValue));
+        }
+    })
+
+    // ### Create and display cards grid dynamically
+
+    // * easy: 3 rows x 4 columns
+    // * medium: 4 rows x 4 columns
+    // * advanced: 4 rows x 5 columns
+
+    // ## Display cards
+    function displayCards(rows, columns) {
+
+        body.append(`<div id="grid"></div>`)
+        let grid = $('#grid');
+        for (let r = 0; r < rows; r++) {
+            grid.append(`<div class="grid-row">`)
+            for (let c = 0; c < columns; c++) {
+                grid.append(`<span class="grid-card">
+                    Card ${c} ${r}
+                </span>`)
+            }
+            grid.append(`</div>`)
+        }
+    }
+
+    // # Get rows
+    function getCardsRows(levelValue) {
+
+        let rows = 4;
+
+        if(levelValue === 'easy') {
+            rows = 3;
+        }
+        return rows;
+    }
+
+    // # Get columns
+    function getCardsColumns(levelValue) {
+
+        let columns = 4;
+
+        if(levelValue === 'advanced'){
+            columns = 5;
+        }
+        return columns;
+    }
+
+    // ### Random card values
+    function setRandomCardValues(levelValue, rows, columns) {
+
+        // * easy: 6 card types
+        // * medium: 8 card types
+        // * advanced: 10 card types
+
+        let cardValues = [];
+        let counterValues = []; // maximum 2 values of the same type
+        let totalTypes = [];
+
+        if(levelValue ==='easy') {
+            totalTypes.length = 6;
+        } else if(levelValue === 'medium') {
+            totalTypes.length = 8;
+        } else if(levelValue === 'advanced') {
+            totalTypes.length = 10;
+        }
+
+        // Reset
+        for (let i = 0; i < totalTypes.length; i++) {
+            counterValues[i] = 0;
+            totalTypes[i] = i;
+        }
+
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < columns; c++) {
+                cardValues[r,c] = totalTypes[Math.floor( Math.random() * totalTypes.length)] // Random value between 0 and totalTypes.length
+                console.log(cardValues[r,c]);
+                counterValues[cardValues[r,c]]++
+                if(counterValues[cardValues[r,c]] >= 2) {
+                    totalTypes = totalTypes.filter(function(value) { // Return new array and remove type
+                        return value !== counterValues[cardValues[r,c]];
+                    })
+                    //totalTypes.splice(cardValues[r,c], cardValues[r,c])
+                }
+                console.log(totalTypes)
+            }
+        }
+
+        // Fiquei aqui
+    }
+
+    //let currentCardSelection = $('#startButton');
+
+</script>
+
+</html>
