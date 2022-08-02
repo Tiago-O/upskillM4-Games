@@ -3,15 +3,100 @@
 <head>
     <meta charset="UTF-8">
     <title>Jogo memória</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500&display=swap" rel="stylesheet">
     <style>
+        * {
+            font-family: 'Ubuntu', sans-serif;
+            font-weight: 300;
+        }
+
+        body {
+            background-image: linear-gradient(315deg, #bf3a30 0%, #864ba2 74%);;
+            height: 100vh;
+            width: 100%;
+            margin: 0;
+        }
+
+        h1, h2, h3 {
+            font-weight: 400;
+        }
+
+        h1 {
+            font-size: 3.0em;
+            color: #f6c333 /*hsl(225, 97%, 26%)*/;
+            text-shadow: 0 0 30px #0000FF , 0 0 10px #FF0000;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        h2 {
+            color: #f6c333;
+            font-size: 1.5em;
+            text-align: center;
+            font-weight: 400;
+        }
+
+        h3, h4 {
+            color: #f1e5b5;
+            font-size: 1em;
+            text-align: center;
+            margin: 0;
+        }
+
         form {
-            background: black;
-            color: white;
-            padding: 1em;
+            background-image: linear-gradient(hsl(225, 97%, 26%, 45%), transparent);
+            color: #f1e5b5;
+            margin: 3.5em 30em;
+            padding: 3em;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+        }
+
+        form > div {
+            margin: 1em;
+        }
+
+        form > div > div {
+            margin: 0.5em;
+        }
+
+        form > div > label {
+            font-size: 1.5em;
+            font-weight: 400;
+            color:#f6c333;
+        }
+
+        button {
+             align-items: center;
+             background-color: #f6c333;
+             color: hsl(225, 97%, 26%);
+             border: 0;
+             border-radius: 12px;
+             box-sizing: border-box;
+             cursor: pointer;
+             font-size: 1em;
+             height: 2.5em;
+             padding-left: 1.5em;
+             padding-right: 1.5em;
+             text-decoration: none;
+             text-transform: uppercase;
+             transition: .2s ease-in-out 0s;
+            font-weight: 400;
+        }
+
+        button:hover {
+            transform: scale(1.05);
+            /*background: #f6c333;
+            cor: #f1e5b5;*/
         }
 
         #grid {
-
+            display: flex;
+            align-items: center;
         }
 
         .grid-row {
@@ -19,35 +104,38 @@
         }
 
         .grid-card {
-            background-color: gray;
+            background-color: #f6c333;
             margin: 1em;
         }
-    </style>
+</style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 </head>
 <body>
     <h1>Memory Game</h1>
     <div>
         <form>
-            <label>Who is playing?</label><br>
-            <input type="text" required placeholder="Name" id="playerName"><br>
 
-            <label>Dificuldade</label><br>
-
-            <!-- Input type radio: tem todos de ter o mesmo name -->
             <div>
-                <input type="radio" id="easy" name="level" value="easy" class="level">
-                <label for="easy">Easy 3 x 4</label>
+                <label>Who is playing?</label><br>
+                <div>
+                    <input type="text" required placeholder="Name" id="playerName"><br>
+                </div>
             </div>
 
             <div>
-                <input type="radio" id="medium" name="level" value="medium" class="level">
-                <label for="medium">Medium 4 x 4</label>
-            </div>
-
-            <div>
-                <input type="radio" id="advanced" name="level" value="advanced" class="level">
-                <label for="advanced">Advanced 4 x 5</label>
+                <label>Difficulty</label><br>
+                <div>
+                    <input type="radio" id="easy" name="level" value="easy" class="level">
+                    <label for="easy">Easy 3 x 4</label>
+                </div>
+                <div>
+                    <input type="radio" id="medium" name="level" value="medium" class="level">
+                    <label for="medium">Medium 4 x 4</label>
+                </div>
+                <div>
+                    <input type="radio" id="advanced" name="level" value="advanced" class="level">
+                    <label for="advanced">Advanced 4 x 5</label>
+                </div>
             </div>
 
             <!-- <button type="button" class="level" value="easy">Easy 3 x 4</button><br>
@@ -81,8 +169,9 @@
 
         if(formValidity) {
             body.append(`<div>
-                <h2>Welcome ${playerNameValue}</h2>
-                <h3>Current level: ${levelValue}</h3>
+                <h2>Welcome ${playerNameValue}!</h2>
+                <h3>Current level:</h3>
+                <h4>${levelValue}</h4>
             </div>`)
 
             // # Clear input:
@@ -114,7 +203,10 @@
                 let cell = $(`<span class="grid-card">
                     Card ${c} ${r}
                 </span>`);
-                // cell.onclick
+                /*cell.onclick(() => {
+                    //cell.getElementById("demo").innerHTML = "red"
+                    console.log("passei aqui")
+                })*/
                 grid.append(cell)
 
             }
