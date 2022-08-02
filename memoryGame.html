@@ -33,9 +33,26 @@
             <input type="text" required placeholder="Name" id="playerName"><br>
 
             <label>Dificuldade</label><br>
-            <button type="button" class="level" value="easy">Easy 3 x 4</button><br>
+
+            <!-- Input type radio: tem todos de ter o mesmo name -->
+            <div>
+                <input type="radio" id="easy" name="level" value="easy" class="level">
+                <label for="easy">Easy 3 x 4</label>
+            </div>
+
+            <div>
+                <input type="radio" id="medium" name="level" value="medium" class="level">
+                <label for="medium">Medium 4 x 4</label>
+            </div>
+
+            <div>
+                <input type="radio" id="advanced" name="level" value="advanced" class="level">
+                <label for="advanced">Advanced 4 x 5</label>
+            </div>
+
+            <!-- <button type="button" class="level" value="easy">Easy 3 x 4</button><br>
             <button type="button" class="level" value="medium">Medium 4 x 4</button><br>
-            <button type="button" class="level" value="advanced">Advanced 4 x 5</button><br>
+            <button type="button" class="level" value="advanced">Advanced 4 x 5</button><br> -->
 
             <button type="button" id="startButton">Play!</button>
         </form>
@@ -46,12 +63,14 @@
     let startButton = $('#startButton');
     let playerName = $('#playerName');
     let body = $('body');
-    let level = $('.level');
+    //let level = $('.level');
+
+    let cardValues = [];
 
     // ### Read input values and display results
     startButton.click(function() {
         let playerNameValue = playerName.val();
-        let levelValue = level.val();
+        let levelValue = document.querySelector('input[name="level"]:checked').value // TODO: confirm if it's the best way to do it.
         let formValidity = true;
 
         // ## Check form validity
@@ -69,6 +88,9 @@
             // # Clear input:
             playerName.val('');
             // TODO: disabled button.
+
+            // # Create cards values:
+            setRandomCardValues(levelValue, getCardsRows(levelValue), getCardsColumns(levelValue));
 
             // # Show cards:
             displayCards(getCardsRows(levelValue), getCardsColumns(levelValue));
@@ -89,12 +111,16 @@
         for (let r = 0; r < rows; r++) {
             grid.append(`<div class="grid-row">`)
             for (let c = 0; c < columns; c++) {
-                grid.append(`<span class="grid-card">
+                let cell = $(`<span class="grid-card">
                     Card ${c} ${r}
-                </span>`)
+                </span>`);
+                // cell.onclick
+                grid.append(cell)
+
             }
             grid.append(`</div>`)
         }
+
     }
 
     // # Get rows
@@ -126,7 +152,6 @@
         // * medium: 8 card types
         // * advanced: 10 card types
 
-        let cardValues = [];
         let counterValues = []; // maximum 2 values of the same type
         let totalTypes = [];
 
@@ -145,24 +170,33 @@
         }
 
         for (let r = 0; r < rows; r++) {
+                cardValues[r] = [];
             for (let c = 0; c < columns; c++) {
-                cardValues[r,c] = totalTypes[Math.floor( Math.random() * totalTypes.length)] // Random value between 0 and totalTypes.length
-                console.log(cardValues[r,c]);
-                counterValues[cardValues[r,c]]++
-                if(counterValues[cardValues[r,c]] >= 2) {
-                    totalTypes = totalTypes.filter(function(value) { // Return new array and remove type
-                        return value !== counterValues[cardValues[r,c]];
+                cardValues[r][c] = randomCardValue(totalTypes)
+                //console.log(cardValues[r][c]);
+                counterValues[cardValues[r][c]]++ // Increment counter values
+                if(counterValues[cardValues[r][c]] >= 2 ) {
+                    totalTypes = totalTypes.filter(function(value) {
+                        return value !== cardValues[r][c]; // Remove type value
                     })
-                    //totalTypes.splice(cardValues[r,c], cardValues[r,c])
                 }
-                console.log(totalTypes)
+                //console.log(totalTypes)
             }
         }
-
-        // Fiquei aqui
+        console.log(cardValues)
     }
 
-    //let currentCardSelection = $('#startButton');
+    // ## Return random value between 0 and totalTypes.length
+    function randomCardValue(totalTypes) {
+        return totalTypes[Math.floor( Math.random() * totalTypes.length)];
+    }
+
+
+    //currentCardSelection.click(function() {
+
+    //}
+
+    // Dúvida: adicionar valor do simbolo. Qual a melhor maneira de atribuir?
 
 </script>
 
