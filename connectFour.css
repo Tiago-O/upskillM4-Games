@@ -1,0 +1,30 @@
+
+#connect-four-grid {
+    margin: 10px;
+    display: flex;
+    width: 90%;
+    height: 70%;
+}
+
+.connect-four-col {
+    width: 50px;
+}
+.connect-four-row {
+    display: flex;
+    height: 50px;
+    border: solid;
+}
+
+.ball-player-1 {
+    width: 50px;
+    height: 50px;
+    background-color: gold;
+    border-radius: 50%;
+}
+
+.ball-player-2 {
+    width: 50px;
+    height: 50px;
+    background-color: crimson;
+    border-radius: 50%;
+}
