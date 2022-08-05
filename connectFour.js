@@ -1,5 +1,6 @@
-// jogo 4 em linha / Connect Four
+// game Connect Four
 
+// starting board
 let board = [
     [0,0,0,0,0,0,0],
     [0,0,0,0,0,0,0],
@@ -12,26 +13,35 @@ let board = [
 // play: 0 - 6 (index)
 // player: number 1 or number 2
 
-function boardAfterPlay(board, player, iPlay) {
+let winPlayerName = $('#win-player-name');
+
+// what happens with every play
+// (board and player are global variables)
+function boardAfterPlay(iPlay) {
     for (let i = 0; i < board.length; i++) {
         if (board[i][iPlay] === 0) {
-            // player === 1 ? board[i][iPlay] = 1 : board[i][iPlay] = 2;
-            // board[i][iPlay] = (player === 1 ? 1 : 2)
             board[i][iPlay] = player;
             let colRow = $(`#col_${iPlay}_row_${i}`);
             colRow.append(`<div class="ball-player-${player}"></div>`)
 
-            console.log(board);
-
             let winner = victory(board);
             if (winner !== 0) {
-                alert('player ' + winner + ' won!!');
+                // victory
                 gameOver = true;
+                victoryBox.show();
+                winner === 1 ? winPlayerName.text(`${player1InputName.val()} won!!`) : winPlayerName.text(`${player2InputName.val()} won!!`);
+
             } else if (fullBoard(board)) {
-                alert('its a tie');
+                // no victory > but the board is full
                 gameOver = true;
+                victoryBox.show();
+                winPlayerName.text('It is a draw.')
+
             } else {
+                // no victory > game continues
                 player = nextToPlay(player);
+                boxPlayer.eq(player - 1).addClass("box-player-name-playing");
+                boxPlayer.eq(nextToPlay(player) - 1).removeClass("box-player-name-playing");
             }
 
             return;
@@ -39,7 +49,7 @@ function boardAfterPlay(board, player, iPlay) {
     }
 }
 
-// return the winning player (1 or 2), 0 if no victory
+// returns 0 if no victory, or the winning player number (1 or 2)
 function victory(board) {
     // lines
     for (let l = board.length - 1; l >= 0; l--) {
@@ -77,15 +87,18 @@ function victory(board) {
     return 0;
 }
 
+// is the board full of pieces?
 function fullBoard(board) {
     return !board[board.length - 1].includes(0);
 }
 
+// Random 1st player
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Math/random
 function randomFirstPlayer() {
-    return Math.floor(Math.random() * 2 + 1);
+    return Math.floor(Math.random() * 2) + 1;
 }
 
+// next to play player
 function nextToPlay(last) {
     return last === 1 ? 2 : 1;
 }
@@ -100,34 +113,118 @@ function newGame(board) {
     return true;
 }
 
-// GAME
+// GAME running
 
 let connectFourGrid = $('#connect-four-grid');
 let gameOver = false;
 let player;
 
+let boxPlayer = $('.box-player-name');
+
 if (newGame(board)) {
         player = randomFirstPlayer();
+        boxPlayer.eq(player - 1).addClass("box-player-name-playing");
     } else {
         player = nextToPlay(player);
     }
 
-// for das colunas
+// for cols
 for (let i = 0; i < board[0].length; i++) {
     let col = $(`<div id="col_${i}" class="connect-four-col"></div>`);
 
     col.click(() => {
         if(!gameOver) {
-            boardAfterPlay(board, player, i);
-            player = nextToPlay(player);
+            boardAfterPlay(i);
         }
     });
 
-    //for das linhas
+    //for rows
     for (let j = board.length - 1; j >= 0; j--) {
-        //append das row ao col
+        //append rows to col
         col.append(`<div id="col_${i}_row_${j}" class="connect-four-row"></div>`)
     }
     // append da col com as rows
     connectFourGrid.append(col);
+}
+
+let connectFourMenu = $('#connect-four-menu');
+let gameArea = $('#game-area');
+let startGameButton = $('#start-game');
+
+let player1InputName = $('#p1-name');
+let player2InputName = $('#p2-name');
+let boxPlayer1DivName = $('#name-player1');
+let boxPlayer2DivName = $('#name-player2');
+
+let victoryBox = $('#box-win');
+let goToMenu = $('#box-win-button');
+
+
+if (connectFourMenu.show()) {
+    gameArea.hide();
+    victoryBox.hide();
+}
+
+// START GAME Button
+startGameButton.click(function () {
+
+    boxPlayer1DivName.text(player1InputName.val());
+    boxPlayer2DivName.text(player2InputName.val());
+
+    gameArea.show();
+    startTimer();
+    gameOver = false;
+    connectFourMenu.hide();
+});
+
+// END GAME / Go To Menu Button
+goToMenu.click(function () {
+    // clean board
+    board = [
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0]
+    ];
+    $(".connect-four-row").empty()
+
+    // clean names? no
+
+    gameArea.hide();
+    victoryBox.hide();
+    connectFourMenu.show();
+})
+
+// TIMER
+function startTimer() {
+    let timer = $('#timer');
+    timer.text('00 : 00');
+    let seconds = 0;
+    let minutes = 0;
+
+    setInterval(displayTimer, 1000);
+
+    function displayTimer() {
+        seconds += 1;
+        if (seconds === 60) {
+            seconds = 0;
+            minutes++;
+        }
+
+        let s = seconds;
+
+        if (seconds <= 9) {
+            s = `0${seconds}`;
+        }
+
+        let m = minutes
+
+        if (minutes <= 9) {
+            m = `0${minutes}`;
+        }
+
+        timer.text(`${m} : ${s}`);
+    }
 }
