@@ -10,17 +10,46 @@
 </head>
 <body>
 
-    <h2>Connect Four</h2>
+    <div class="container d-flex justify-content-center">
+        <h1>Connect Four</h1>
+    </div>
 
-    <h5>Who is playing?</h5>
-    <form class="p-2">
-        <input type="text" required minlength="3" id="p1Name" class="form-control mb-1" placeholder="Player 1">
-        <h6>vs</h6>
-        <input type="text" required id="p2Name" class="form-control mb-1" placeholder="Player 2">
-        <button type="button" id="startGame" class="btn btn-primary mt-2">Start Game</button>
-    </form>
+    <div id="connect-four-menu" class="container">
+        <h5>Who is playing?</h5>
+        <form class="p-2">
+            <input type="text" required minlength="3" id="p1-name" class="form-control mb-1" placeholder="Player 1">
+            <h6>vs</h6>
+            <input type="text" required minlength="3" id="p2-name" class="form-control mb-1" placeholder="Player 2">
+            <button type="button" id="start-game" class="btn btn-primary mt-2">Start Game</button>
+        </form>
+    </div>
 
-    <div id="connect-four-grid"></div>
+    <div id="game-area" class="container">
+
+        <div class="d-flex justify-content-center">
+            <div id="timer" class=" p-2"></div>
+        </div>
+
+        <div id="boxes-players" class="d-flex justify-content-around">
+            <div class="box-player-name d-flex align-items-center">
+                <div id="img-ball-player1" class="mx-1"></div>
+                <div id="name-player1" class="mx-1"></div>
+            </div>
+            <div class="box-player-name d-flex align-items-center">
+                <div id="img-ball-player2" class="mx-1"></div>
+                <div id="name-player2" class="mx-1"></div>
+            </div>
+        </div>
+
+
+        <div id="connect-four-grid" class="m-2"></div>
+
+    </div>
+
+    <div id="box-win">
+        <h5 id="win-player-name"></h5>
+        <button type="button" id="box-win-button" class="btn btn-primary mt-2">Menu</button>
+    </div>
 
 </body>
 
