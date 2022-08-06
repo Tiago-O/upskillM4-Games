@@ -11,7 +11,6 @@
     border-radius: 10%;
 }
 
-/* smaller then ball-player class */
 #img-ball-player1 {
     width: 25px;
     height: 25px;
@@ -30,28 +29,48 @@
     justify-content: center;
 }
 .connect-four-col {
-    width: 75px;
+    min-width: 64px;
+    width: 10vw;
+    max-width: 86px;
 
-    justify-content: center;
+    background-color: gray;
+}
+.connect-four-col:hover {
+    background-color: darkgray;
 }
 .connect-four-row {
     display: flex;
-    height: 75px;
+
+    min-height: 64px;
+    height: 10vw;
+    max-height: 86px;
+
     border: solid;
+    border-color: gray;
 
     justify-content: center;
+    align-items: center;
 }
 
-.ball-player-1 {
-    width: 65px;
-    height: 65px;
-    background-color: gold;
+.ball-player {
+    width: 75%;
+    height: 75%;
     border-radius: 50%;
+}
+.ball-player-0 {
+    background-color: white;
+}
+.ball-player-1 {
+    background-color: gold;
 }
 .ball-player-2 {
-    justify-content: center;
-    width: 65px;
-    height: 65px;
     background-color: crimson;
-    border-radius: 50%;
+}
+
+#box-win {
+    background-color: white;
+    z-index: 1000;
+    position: fixed;
+    right: 25%;
+    top: 40%;
 }
