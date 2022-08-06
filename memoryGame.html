@@ -14,8 +14,8 @@
 
         body {
             background-image: linear-gradient(315deg, #bf3a30 0%, #864ba2 74%);
+            width: 100vw;
             height: 100vh;
-            width: 100%;
             margin: 0;
             background-repeat: no-repeat;
             background-attachment: fixed;
@@ -56,7 +56,7 @@
         form {
             background-image: linear-gradient(hsl(225, 97%, 26%, 45%), transparent);
             color: #f1e5b5;
-            margin: 3.5em 30em;
+            margin: 5.5em 30em;
             padding: 3em;
             text-align: center;
             display: flex;
@@ -94,23 +94,23 @@
             text-transform: uppercase;
             transition: .2s ease-in-out 0s;
             font-weight: 400;
+            width: 7.5em;
         }
 
         button:hover {
             transform: scale(1.05);
-            /*background: #f6c333;
-            cor: #f1e5b5;*/
         }
 
         #grid-container {
             display: flex;
-            /*flex-direction: row;*/
             justify-content: center;
             flex-wrap: wrap;
             padding-left: 20em;
             padding-right: 20em;
             cursor: pointer;
-        }
+            margin-top: 1.5em;
+            z-index: 0;
++        }
 
         .grid-card {
             flex: 1 0 20%;
@@ -120,19 +120,28 @@
             margin: 1em;
             height: 7.5rem;
             transition: .2s ease-in-out 0s;
-
-            
         }
 
         .grid-card:hover {
             transform: scale(1.05);
             filter: drop-shadow(0 0 0.75rem crimson);
-            background-color: #f1e5b5;
         }
 
         svg {
             color: #864ba2;
             margin: 0.5em;
+        }
+
+        #pop-up {
+            background-color: hsla(225,97%,26%,0.25);
+            position: absolute;
+            display: flex;
+            flex-direction: column;
+            width: 100vw;
+            height: 100vh;
+            justify-content: center;
+            align-items: center;
+            z-index: 1;
         }
 </style>
     <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
@@ -141,14 +150,12 @@
     <h1>Memory Game</h1>
     <div>
         <form>
-
             <div>
                 <label>Who is playing?</label><br>
                 <div>
-                    <input type="text" required placeholder="Name" id="playerName"><br>
+                    <input type="text" placeholder="Name" id="playerName"><br>
                 </div>
             </div>
-
             <div>
                 <label>Difficulty</label><br>
                 <div>
@@ -164,11 +171,6 @@
                     <label for="advanced">Advanced 4 x 5</label>
                 </div>
             </div>
-
-            <!-- <button type="button" class="level" value="easy">Easy 3 x 4</button><br>
-            <button type="button" class="level" value="medium">Medium 4 x 4</button><br>
-            <button type="button" class="level" value="advanced">Advanced 4 x 5</button><br> -->
-
             <button type="button" id="startButton">Play!</button>
         </form>
     </div>
@@ -178,92 +180,264 @@
     let startButton = $('#startButton');
     let playerName = $('#playerName');
     let body = $('body');
-    //let level = $('.level');
-
     let cardValues = [];
 
-    // ### Read input values and display results
-    startButton.click(function() {
+    startButton.click(displayInputValue)
+
+    function displayInputValue() {
         let playerNameValue = playerName.val();
         let levelValue = document.querySelector('input[name="level"]:checked').value // TODO: confirm if it's the best way to do it.
         let formValidity = true;
 
-        // ## Check form validity
+        // Check form validity
         /*if(!(playerNameValue[0].checkValidity() || levelValue[0].checkValidity())) {
             nome.addClass("is-invalid");
             formValidity = false;
         }*/
 
         if(formValidity) {
+            // Display
             body.append(`<div>
                 <h2>Welcome ${playerNameValue}!</h2>
-                <h3>Current level:</h3>
-                <h4>${levelValue}</h4>
+                <h3>Level : ${levelValue}</h3>
+                <h4 id="timer"></h4>
             </div>`)
 
-            // # Clear input:
+            startTimer()
+
+            // Clear input:
             playerName.val('');
-            // TODO: disabled button.
+            // TODO: disabled input radio.
 
-            // # Create cards values:
-            setRandomCardValues(levelValue, getCardsRows(levelValue), getCardsColumns(levelValue));
-
-            // # Show cards:
-            displayCards(getCardsRows(levelValue), getCardsColumns(levelValue));
+            // Sound:
+            playSound(`start`);
         }
-    })
+        // Create and display cards grid dynamically
+        // easy: 3 rows x 4 columns
+        // medium: 4 rows x 4 columns
+        // advanced: 4 rows x 5 columns
+        randomCardsValues(levelValue, getCardsRows(levelValue), getCardsColumns(levelValue));
+        displayCards(getCardsRows(levelValue), getCardsColumns(levelValue));
+    }
 
-    // ### Create and display cards grid dynamically
+    function startTimer() {
 
-    // * easy: 3 rows x 4 columns
-    // * medium: 4 rows x 4 columns
-    // * advanced: 4 rows x 5 columns
+        let timer = $('#timer');
+        let minutes = '00';
+        let seconds = '00';
+        timer.text(`${minutes} : ${seconds}`);
 
-    // ## Display cards
+        setInterval(function(){
+            seconds++;
+            if(seconds < 10) {
+                seconds = '0' + seconds;
+            } else if (seconds == 60) {
+                seconds = '00'
+                minutes++;
+                if(minutes < 10) {
+                    minutes = '0' + minutes;
+                }
+            }
+            timer.text(`${minutes} : ${seconds}`);
+        }, 1000);
+    }
+
+    function getCardsRows(levelValue) {
+
+        let rows = 4;
+
+        if(levelValue === 'easy') {
+            rows = 3;
+        }
+        return rows;
+    }
+
+    function getCardsColumns(levelValue) {
+
+        let columns = 4;
+
+        if(levelValue === 'advanced'){
+            columns = 5;
+        }
+        return columns;
+    }
+
+    function randomCardsValues(levelValue, rows, columns) {
+
+        // * easy: 6 card types
+        // * medium: 8 card types
+        // * advanced: 10 card types
+
+        let counterValues = []; // maximum 2 values of the same type
+        let totalTypes = [];
+
+        if(levelValue ==='easy') {
+            totalTypes.length = 6;
+        } else if(levelValue === 'medium') {
+            totalTypes.length = 8;
+        } else if(levelValue === 'advanced') {
+            totalTypes.length = 10;
+        }
+
+        // Reset
+        for (let i = 0; i < totalTypes.length; i++) {
+            counterValues[i] = 0;
+            totalTypes[i] = i;
+        }
+
+        for (let r = 0; r < rows; r++) {
+            cardValues[r] = [];
+            for (let c = 0; c < columns; c++) {
+                cardValues[r][c] = randomCardValue(totalTypes)
+                counterValues[cardValues[r][c]]++ // Increment counter values
+                if(counterValues[cardValues[r][c]] >= 2 ) {
+                    totalTypes = totalTypes.filter(function(value) {
+                        return value !== cardValues[r][c]; // Remove type value
+                    })
+                }
+            }
+        }
+        //console.log(cardValues)
+    }
+
+    function randomCardValue(totalTypes) {
+        // Return random value between 0 and totalTypes.length
+        return totalTypes[Math.floor( Math.random() * totalTypes.length)];
+    }
+
     function displayCards(rows, columns) {
 
         body.append(`<div id="grid-container"></div>`)
         let grid = $('#grid-container');
-
-        /*let t = document.getElementById("titulo");
-        let b = document.body;
-        let x = 16;
-
-        t.onclick = function(e){
-            //console.log(e.target.style.fontSize) // Imprime "16 px"
-            x++;
-            t.style.fontSize = `${x}px`;
-            //console.log(e.target.style.fontSize);
-        }
-
-        b.onclick = function(){
-            const randomColor = Math.floor(Math.random()*16777215).toString(16);
-            b.style.backgroundColor = "#" + randomColor;
-        }*/
+        // ## Variables to control selection:
+        let selectionAvailable = true
+        // true - cards available for selection
+        // false - cards selected
+        let cardSelectionCounter = -1;
+        // # Get the index of card(s) selected (max 2 cards picked):
+        // -1 - reset;
+        // 0 - first card selected;
+        // 1 - second card selected.
+        let cardSelection = [-1,-1];
+        // # Get the value(s) of card(s) selected.
+        // -1 - reset;
+        // 0-9 - values.
+        let cardCellSelection = [-1,-1];
+        // # Get the cell of card(s) selected.
+        // -1 - reset;
+        // cell.
+        let cardSelectionId = [-1,-1];
+        // # Get the r and c of cardValues selected.
+        // -1 - reset;
+        // [r,c].
+        let audioWinCounter = 0;
 
         for (let r = 0; r < rows; r++) {
-            //grid.append(`<div class="grid-row">`)
             for (let c = 0; c < columns; c++) {
-                let cell = $(`<div class="grid-card">
-                    <!-- Card ${r} ${c} -->
+                let cell = $(`<div class="grid-card" >
                 </div>`);
-
-                //  # Show card value
+                insertCardIcons(r, c, cell)
+                cell.children().hide(); // Hide all svg
                 cell.click(function(){
-                    //let cellWidth = cell.style.margin;
-                    //cell.innerHTML = `${cardValues[c][r]}`;
-                    //console.log(cellWidth);
-                    //console.log(cardValues[r][c]);
-                    insertCardIcons(r, c, cell)
+                    // Does not let select more than two cards, the same card or disabled card.
+                    if(selectionAvailable == true && cell !== cardCellSelection[cardSelectionCounter] && cardValues[r][c] !== -1) {
+                        cardSelectionCounter++;
+                        cardSelection[cardSelectionCounter] = cardValues[r][c];
+                        cardCellSelection[cardSelectionCounter] = cell;
+                        cardSelectionId[cardSelectionCounter] = [r,c];
+                        cell.children().show(); // Show selected svg.
+                        // Two cards selected:
+                        if(cardSelectionCounter === 1) {
+                            selectionAvailable = false
+                            // Show selection results:
+                            setTimeout(() => {
+                                // Win:
+                                if(cardSelection[0] === cardSelection[1] ) {
+                                    // Cards highlight:
+                                    cardCellSelection[0].css('background-color', '#f1e5b5');
+                                    cardCellSelection[1].css('background-color', '#f1e5b5');
+                                    // Sound:
+                                    audioWinCounter++
+                                    playSound(`win${audioWinCounter}`);
+                                    if(audioWinCounter === 3) {
+                                        audioWinCounter = 0; // Reset win audio counter
+                                    }
+                                    // Reset cards values:
+                                    cardValues[cardSelectionId[0][0]][cardSelectionId[0][1]] = -1
+                                    cardValues[cardSelectionId[1][0]][cardSelectionId[1][1]] = -1
+                                // Lose:
+                                } else {
+                                    // Cards lowlight
+                                    cardCellSelection[0].css('background-color', '#cd915c');
+                                    cardCellSelection[1].css('background-color', '#cd915c');
+                                    // Sound:
+                                    playSound(`lose`);
+                                }
+                            }, 250);
+                            // Selection over:
+                            setTimeout(() => {
+                                $('svg').hide() // Hide all svg after selection
+                                // Win
+                                if(cardSelection[0] === cardSelection[1] ) {
+                                    // Disabled cards
+                                    cardCellSelection[0].css('background-color', 'hsla(225,97%,26%,0.13)');
+                                    cardCellSelection[1].css('background-color', 'hsla(225,97%,26%,0.13)');
+                                // Lose
+                                } else {
+                                    // Cards available to selection again
+                                    cardCellSelection[0].css('background-color', '#f6c333');
+                                    cardCellSelection[1].css('background-color', '#f6c333');
+                                }
+                                // Reset variables
+                                selectionAvailable = true
+                                cardSelectionCounter = -1
+                                cardSelection[0] = -1
+                                cardSelection[1] = -1
+                                cardCellSelection[0] = -1
+                                cardCellSelection[1] = -1
+                                cardSelectionId = [-1,-1]
+                                if(checkGameIsOver(rows, columns) === true) {
+                                    displayPopUp()
+                                };
+                            }, 1250);
+                        }
+                    }
                 });
-
                 grid.append(cell)
             }
             grid.append(`</div>`)
         }
     }
 
-    // # Card icons
+    function checkGameIsOver(rows, columns) {
+
+        let totalCards = rows * columns;
+        let cardAvailable = totalCards;
+
+        for (let r = 0; r < rows; r++) {
+            for (let c = 0; c < columns; c++) {
+                if(cardValues[r][c] > -1) {
+                    cardAvailable--;
+                }
+            }
+        }
+        if(cardAvailable === totalCards) {
+            return true
+        }
+        return false
+    }
+
+    function displayPopUp() {
+        $(`h2`).before(`<div id='pop-up'>
+            <h2>Congratulations!</h2>
+            <span>
+                <button type="button">Restart</button>
+                <button type="button">Menu</button>
+            </span>
+        </div>`)
+        playSound('end');
+    }
+
     function insertCardIcons(r, c, cell) {
         switch (cardValues[r][c]) {
             case(0): // Rocket
@@ -355,80 +529,20 @@
         }
     }
 
-    // # Get rows
-    function getCardsRows(levelValue) {
+    function playSound(soundName) {
 
-        let rows = 4;
-
-        if(levelValue === 'easy') {
-            rows = 3;
-        }
-        return rows;
+        let audio = new Audio(`audio/${soundName}.mp3`);
+        audio.play();
     }
 
-    // # Get columns
-    function getCardsColumns(levelValue) {
+    // TODO:
+    // * Review all TODO;
+    // * Remove scale from the selected card;
+    // * Add the popup correctly;
+    // * Stop timer;
+    // * Form can be re-added;
+    // * css responsive.
 
-        let columns = 4;
-
-        if(levelValue === 'advanced'){
-            columns = 5;
-        }
-        return columns;
-    }
-
-    // ### Random card values
-    function setRandomCardValues(levelValue, rows, columns) {
-
-        // * easy: 6 card types
-        // * medium: 8 card types
-        // * advanced: 10 card types
-
-        let counterValues = []; // maximum 2 values of the same type
-        let totalTypes = [];
-
-        if(levelValue ==='easy') {
-            totalTypes.length = 6;
-        } else if(levelValue === 'medium') {
-            totalTypes.length = 8;
-        } else if(levelValue === 'advanced') {
-            totalTypes.length = 10;
-        }
-
-        // Reset
-        for (let i = 0; i < totalTypes.length; i++) {
-            counterValues[i] = 0;
-            totalTypes[i] = i;
-        }
-
-        for (let r = 0; r < rows; r++) {
-                cardValues[r] = [];
-            for (let c = 0; c < columns; c++) {
-                cardValues[r][c] = randomCardValue(totalTypes)
-                //console.log(cardValues[r][c]);
-                counterValues[cardValues[r][c]]++ // Increment counter values
-                if(counterValues[cardValues[r][c]] >= 2 ) {
-                    totalTypes = totalTypes.filter(function(value) {
-                        return value !== cardValues[r][c]; // Remove type value
-                    })
-                }
-                //console.log(totalTypes)
-            }
-        }
-        console.log(cardValues)
-    }
-
-    // ## Return random value between 0 and totalTypes.length
-    function randomCardValue(totalTypes) {
-        return totalTypes[Math.floor( Math.random() * totalTypes.length)];
-    }
-
-
-    //currentCardSelection.click(function() {
-
-    //}
-
-    // Dúvida: adicionar valor do simbolo. Qual a melhor maneira de atribuir?
 </script>
 
 </html>
