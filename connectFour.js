@@ -10,9 +10,13 @@ let board = [
     [0,0,0,0,0,0,0]
 ];
 
-// play: 0 - 6 (index)
-// player: number 1 or number 2
+// history list
+let connectFourHistory = [];
 
+// play: 0 - 6 (index) > iPlay
+// player: number 1 or number 2
+let player;
+// div win-player-name !== victor player
 let winPlayerName = $('#win-player-name');
 
 // what happens with every play
@@ -22,20 +26,60 @@ function boardAfterPlay(iPlay) {
         if (board[i][iPlay] === 0) {
             board[i][iPlay] = player;
             let colRow = $(`#col_${iPlay}_row_${i}`);
-            colRow.append(`<div class="ball-player-${player}"></div>`)
+
+            // colRow.eq(0).removeClass("ball-player-0").addClass(`ball-player-${player}`);
+
+            colRow.empty();
+            colRow.append(`<div class="ball-player ball-player-${player}"></div>`)
 
             let winner = victory(board);
             if (winner !== 0) {
                 // victory
                 gameOver = true;
                 victoryBox.show();
-                winner === 1 ? winPlayerName.text(`${player1InputName.val()} won!!`) : winPlayerName.text(`${player2InputName.val()} won!!`);
+
+                // text in victory box
+                let victor;
+                winner === 1 ? victor = player1InputName.val() : victor = player2InputName.val();
+                winPlayerName.text(`${victor} won!!`)
+
+                // stops setInterval
+                clearInterval(intervalId);
+                // shows time at the end of game (mm, ss: global variables)
+                showTimer(mm, ss);
+
+                // date and time
+                let now = Date.now();
+
+                // updates history
+                connectFourHistory.push({
+                    winner: victor,
+                    player1: player1InputName.val(),
+                    player2: player2InputName.val(),
+                    gameTime: `${mm}:${ss}`,
+                    atDate: formatDate(now),
+                    atTime: formatTime(now)
+                });
+                console.log(connectFourHistory);
 
             } else if (fullBoard(board)) {
                 // no victory > but the board is full
                 gameOver = true;
                 victoryBox.show();
                 winPlayerName.text('It is a draw.')
+
+                // stops setInterval
+                clearInterval(intervalId);
+                // shows time at the end of game
+                showTimer(mm, ss);
+
+                // updates history
+                connectFourHistory.push({
+                    winner: 'draw-game', // or false ?
+                    player1: player1InputName.val(),
+                    player2: player2InputName.val(),
+                    time: `${mm}:${ss}`
+                });
 
             } else {
                 // no victory > game continues
@@ -116,11 +160,9 @@ function newGame(board) {
 // GAME running
 
 let connectFourGrid = $('#connect-four-grid');
-let gameOver = false;
-let player;
-
 let boxPlayer = $('.box-player-name');
 
+// if new game > 1st to play is random
 if (newGame(board)) {
         player = randomFirstPlayer();
         boxPlayer.eq(player - 1).addClass("box-player-name-playing");
@@ -128,23 +170,31 @@ if (newGame(board)) {
         player = nextToPlay(player);
     }
 
-// for cols
-for (let i = 0; i < board[0].length; i++) {
-    let col = $(`<div id="col_${i}" class="connect-four-col"></div>`);
+// NEW GAME GRID
+function newGameGrid() {
+    // empty the grid
+    connectFourGrid.empty();
 
-    col.click(() => {
-        if(!gameOver) {
-            boardAfterPlay(i);
+    // for cols
+    for (let i = 0; i < board[0].length; i++) {
+        let col = $(`<div id="col_${i}" class="connect-four-col"></div>`);
+
+        col.click(() => {
+            if(!gameOver) {
+                boardAfterPlay(i);
+            }
+        });
+
+        //for rows
+        for (let j = board.length - 1; j >= 0; j--) {
+            //append rows to col
+            col.append(`<div id="col_${i}_row_${j}" class="connect-four-row">
+            <div class="ball-player ball-player-0"></div>
+        </div>`)
         }
-    });
-
-    //for rows
-    for (let j = board.length - 1; j >= 0; j--) {
-        //append rows to col
-        col.append(`<div id="col_${i}_row_${j}" class="connect-four-row"></div>`)
+        // append da col com as rows
+        connectFourGrid.append(col);
     }
-    // append da col com as rows
-    connectFourGrid.append(col);
 }
 
 let connectFourMenu = $('#connect-four-menu');
@@ -157,8 +207,8 @@ let boxPlayer1DivName = $('#name-player1');
 let boxPlayer2DivName = $('#name-player2');
 
 let victoryBox = $('#box-win');
-let goToMenu = $('#box-win-button');
-
+let playAgain = $('#box-win-playagain-button');
+let goToMenu = $('#box-win-menu-button');
 
 if (connectFourMenu.show()) {
     gameArea.hide();
@@ -168,16 +218,44 @@ if (connectFourMenu.show()) {
 // START GAME Button
 startGameButton.click(function () {
 
+    // removes class invalid if user starts writing
+    player1InputName.on("input", function () {
+        player1InputName.removeClass("is-invalid");
+    })
+
+    player2InputName.on("input", function () {
+        player2InputName.removeClass("is-invalid");
+    })
+
+    // check players names validity
+    let formValid = true;
+    if(!player1InputName[0].checkValidity()) {
+        player1InputName.addClass("is-invalid");
+        formValid = false;
+    }
+    if(!player2InputName[0].checkValidity()) {
+        player2InputName.addClass("is-invalid");
+        formValid = false;
+    }
+    if(!formValid) {
+        return;
+    }
+
+    // if all ok > insert player names
     boxPlayer1DivName.text(player1InputName.val());
     boxPlayer2DivName.text(player2InputName.val());
-
+    
+    newGameGrid();
     gameArea.show();
-    startTimer();
-    gameOver = false;
     connectFourMenu.hide();
+
+    // starts the timer
+    startTimer();
+    // game is ON
+    gameOver = false;
 });
 
-// END GAME / Go To Menu Button
+// END GAME / Go To MENU Button
 goToMenu.click(function () {
     // clean board
     board = [
@@ -190,21 +268,48 @@ goToMenu.click(function () {
     ];
     $(".connect-four-row").empty()
 
-    // clean names? no
+    // clean players names in input boxes
+    player1InputName.val('');
+    player2InputName.val('');
+
+    gameArea.hide();
+    victoryBox.hide();
+    connectFourMenu.show(); // show menu of all games
+});
+
+// END GAME / PLAY AGAIN Button
+playAgain.click(function () {
+    // clean board
+    board = [
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0],
+        [0,0,0,0,0,0,0]
+    ];
+    $(".connect-four-row").empty()
+
+    // clean names in game menu? no
 
     gameArea.hide();
     victoryBox.hide();
     connectFourMenu.show();
-})
+});
 
 // TIMER
+
+let timer = $('#timer');
+let intervalId;
+let ss;
+let mm;
+
 function startTimer() {
-    let timer = $('#timer');
     timer.text('00 : 00');
     let seconds = 0;
     let minutes = 0;
 
-    setInterval(displayTimer, 1000);
+    intervalId = setInterval(displayTimer, 1000);
 
     function displayTimer() {
         seconds += 1;
@@ -213,18 +318,51 @@ function startTimer() {
             minutes++;
         }
 
-        let s = seconds;
+        ss = seconds;
 
         if (seconds <= 9) {
-            s = `0${seconds}`;
+            ss = `0${seconds}`;
         }
 
-        let m = minutes
+        mm = minutes
 
         if (minutes <= 9) {
-            m = `0${minutes}`;
+            mm = `0${minutes}`;
         }
 
-        timer.text(`${m} : ${s}`);
+        showTimer(mm, ss);
     }
+}
+
+function showTimer(mm, ss) {
+    timer.text(`${mm} : ${ss}`);
+}
+
+// format Date.now()
+function formatDate(date) {
+    let d = new Date(date),
+        year = d.getFullYear(),
+        month = '' + (d.getMonth() + 1),
+        day = '' + d.getDate();
+
+    if (month.length < 2)
+        month = '0' + month;
+    if (day.length < 2)
+        day = '0' + day;
+
+    return [day, month, year].join('/');
+}
+
+function formatTime(time) {
+    let t = new Date(time),
+        hour = t.getHours(),
+        min = '' + t.getMinutes(),
+        sec = '' + t.getSeconds();
+
+    if (min.length < 2)
+        min = '0' + min;
+    if (sec.length < 2)
+        sec = '0' + sec;
+
+    return [hour, min, sec].join(':');
 }
