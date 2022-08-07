@@ -11,7 +11,15 @@ let board = [
 ];
 
 // history list
-let connectFourHistory = [];
+let retrievedData = localStorage.getItem('connectFourHistory');
+let connectFourHistory = JSON.parse(retrievedData);
+if(!connectFourHistory) {
+    connectFourHistory = [];
+}
+console.log(connectFourHistory);
+
+// to delete history
+// localStorage.setItem("connectFourHistory", JSON.stringify([]));
 
 // play: 0 - 6 (index) > iPlay
 // player: number 1 or number 2
@@ -51,7 +59,7 @@ function boardAfterPlay(iPlay) {
                 // date and time
                 let now = Date.now();
 
-                // updates history
+                // update history
                 connectFourHistory.push({
                     winner: victor,
                     player1: player1InputName.val(),
@@ -60,6 +68,8 @@ function boardAfterPlay(iPlay) {
                     atDate: formatDate(now),
                     atTime: formatTime(now)
                 });
+
+                localStorage.setItem("connectFourHistory", JSON.stringify(connectFourHistory));
                 console.log(connectFourHistory);
 
             } else if (fullBoard(board)) {
@@ -73,13 +83,21 @@ function boardAfterPlay(iPlay) {
                 // shows time at the end of game
                 showTimer(mm, ss);
 
+                // date and time
+                let now = Date.now();
+
                 // updates history
                 connectFourHistory.push({
                     winner: 'draw-game', // or false ?
                     player1: player1InputName.val(),
                     player2: player2InputName.val(),
-                    time: `${mm}:${ss}`
+                    gameTime: `${mm}:${ss}`,
+                    atDate: formatDate(now),
+                    atTime: formatTime(now)
                 });
+
+                localStorage.setItem("connectFourHistory", JSON.stringify(connectFourHistory));
+                console.log(connectFourHistory);
 
             } else {
                 // no victory > game continues
@@ -207,7 +225,7 @@ let boxPlayer1DivName = $('#name-player1');
 let boxPlayer2DivName = $('#name-player2');
 
 let victoryBox = $('#box-win');
-let playAgain = $('#box-win-playagain-button');
+let playAgain = $('#box-win-play-again-button');
 let goToMenu = $('#box-win-menu-button');
 
 if (connectFourMenu.show()) {
@@ -244,7 +262,7 @@ startGameButton.click(function () {
     // if all ok > insert player names
     boxPlayer1DivName.text(player1InputName.val());
     boxPlayer2DivName.text(player2InputName.val());
-    
+
     newGameGrid();
     gameArea.show();
     connectFourMenu.hide();
@@ -274,7 +292,7 @@ goToMenu.click(function () {
 
     gameArea.hide();
     victoryBox.hide();
-    connectFourMenu.show(); // show menu of all games
+    connectFourMenu.show(); // show menu of all games !!!
 });
 
 // END GAME / PLAY AGAIN Button
