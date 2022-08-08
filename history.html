@@ -10,52 +10,49 @@
 <body>
 
     <div class="container text-center my-2 w-75">
-        <h1>History</h1>
+        <h1 class="mb-5">History</h1>
 
         <div class="w-100 my-4 border border-secondary">
             <div class="text-center my-2">
                 <h4>Connect Four</h4>
             </div>
-
             <div class="row my-2">
                 <div id="connect-four-champion-name" class="col"></div>
                 <div id="connect-four-champion-freq" class="col"></div>
             </div>
-
             <div class="row my-2">
                 <div id="connect-four-last-played"></div>
             </div>
-
         </div>
 
-        <button type="button" class="btn btn-outline-secondary w-100">Return to Menu</button>
+        <a type="button" href="menu.html" class="btn btn-outline-secondary w-100 my-5">Return to Menu</a>
 
     </div>
-
-
 
 </body>
 
 <script>
 
     // history list
-    let retrievedData = localStorage.getItem('connectFourHistory');
-    let connectFourHistory = JSON.parse(retrievedData);
-    if(!connectFourHistory) {
-        connectFourHistory = [];
+    let retrievedData = localStorage.getItem('history');
+    let history = JSON.parse(retrievedData);
+    if(!history) {
+        history = [];
     }
 
     let boxConnectFourChampion = $('#connect-four-champion-name');
     let boxConnectFourChampionFreq = $('#connect-four-champion-freq');
-    let connectFourChampion = champion(connectFourHistory);
-    let connectFourChampionFreq = champFrequency(winnersFrequency(connectFourHistory), connectFourChampion);
-    let boxConnectFourLastPlayed = $('#connect-four-last-played');
-    let connectFourLast = connectFourHistory[connectFourHistory.length - 1]
+    let connectFourChampion = champion(history);
+    // let connectFourChampionFreq = champFrequency(winnersFrequency(history), connectFourChampion);
+    let connectFourChampionVics = champVictories(winnersFrequency(history))[1];
 
-    if (connectFourHistory) {
+    let boxConnectFourLastPlayed = $('#connect-four-last-played');
+    let connectFourLast = history[history.length - 1]
+
+    if (history) {
         boxConnectFourChampion.text(`Champion: ${connectFourChampion}`);
-        boxConnectFourChampionFreq.text(`${connectFourChampionFreq} victories`);
-        boxConnectFourLastPlayed.text(`Last time played ${connectFourLast.atDate} at ${connectFourLast.atTime} (${connectFourLast.player1} vs ${connectFourLast.player2}) winner: ${connectFourLast.winner}`);
+        boxConnectFourChampionFreq.text(`${connectFourChampionVics} victories`);
+        boxConnectFourLastPlayed.text(`Last time played ${formatDate(connectFourLast.timestamp)} at ${formatTime(connectFourLast.timestamp)} (${connectFourLast.player1} vs ${connectFourLast.player2}) winner: ${connectFourLast.winner}`);
     } else {
         boxConnectFourChampion.text(
             'Never played :('
@@ -95,6 +92,47 @@
 
     function champFrequency(winnerFrequency, champion) {
         return winnerFrequency[champion];
+    }
+
+    // returns list with champion and n victories
+    function champVictories(winnersFrequency) {
+        let winners = Object.entries(winnersFrequency);
+        let champVictories = [winners[0][0], winners[0][1]];
+        for (let i = 0; i < winners.length; i++) {
+            if (winners[i][1] > champVictories[1]) {
+                champVictories = [winners[i][0], winners[i][1]];
+            }
+        }
+        return champVictories;
+    }
+
+    // format Date.now()
+    function formatDate(date) {
+        let d = new Date(date),
+            year = d.getFullYear(),
+            month = '' + (d.getMonth() + 1),
+            day = '' + d.getDate();
+
+        if (month.length < 2)
+            month = '0' + month;
+        if (day.length < 2)
+            day = '0' + day;
+
+        return [day, month, year].join('/');
+    }
+
+    function formatTime(time) {
+        let t = new Date(time),
+            hour = t.getHours(),
+            min = '' + t.getMinutes(),
+            sec = '' + t.getSeconds();
+
+        if (min.length < 2)
+            min = '0' + min;
+        if (sec.length < 2)
+            sec = '0' + sec;
+
+        return [hour, min, sec].join(':');
     }
 
 </script>
