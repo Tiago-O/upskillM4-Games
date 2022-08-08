@@ -10,16 +10,13 @@ let board = [
     [0,0,0,0,0,0,0]
 ];
 
-// history list
-let retrievedData = localStorage.getItem('connectFourHistory');
-let connectFourHistory = JSON.parse(retrievedData);
-if(!connectFourHistory) {
-    connectFourHistory = [];
+// // load history from Local Storage
+let retrievedData = localStorage.getItem('history');
+let history = JSON.parse(retrievedData);
+if(!history) {
+    history = [];
 }
-console.log(connectFourHistory);
-
-// to delete history
-// localStorage.setItem("connectFourHistory", JSON.stringify([]));
+console.log(history);
 
 // play: 0 - 6 (index) > iPlay
 // player: number 1 or number 2
@@ -56,21 +53,19 @@ function boardAfterPlay(iPlay) {
                 // shows time at the end of game (mm, ss: global variables)
                 showTimer(mm, ss);
 
-                // date and time
-                let now = Date.now();
-
-                // update history
-                connectFourHistory.push({
+                // update history list with an object
+                history.push({
+                    game: 'connect-four',
                     winner: victor,
                     player1: player1InputName.val(),
                     player2: player2InputName.val(),
                     gameTime: `${mm}:${ss}`,
-                    atDate: formatDate(now),
-                    atTime: formatTime(now)
+                    timestamp: Date.now()
                 });
 
-                localStorage.setItem("connectFourHistory", JSON.stringify(connectFourHistory));
-                console.log(connectFourHistory);
+                // save to Local Storage
+                localStorage.setItem("history", JSON.stringify(history));
+                console.log(history);
 
             } else if (fullBoard(board)) {
                 // no victory > but the board is full
@@ -83,21 +78,19 @@ function boardAfterPlay(iPlay) {
                 // shows time at the end of game
                 showTimer(mm, ss);
 
-                // date and time
-                let now = Date.now();
-
-                // updates history
-                connectFourHistory.push({
-                    winner: 'draw-game', // or false ?
+                // update history list with an object
+                history.push({
+                    game: 'connect-four',
+                    winner: victor,
                     player1: player1InputName.val(),
                     player2: player2InputName.val(),
                     gameTime: `${mm}:${ss}`,
-                    atDate: formatDate(now),
-                    atTime: formatTime(now)
+                    timestamp: Date.now()
                 });
 
-                localStorage.setItem("connectFourHistory", JSON.stringify(connectFourHistory));
-                console.log(connectFourHistory);
+                // save to Local Storage
+                localStorage.setItem("history", JSON.stringify(history));
+                console.log(history);
 
             } else {
                 // no victory > game continues
@@ -200,6 +193,7 @@ function newGameGrid() {
         col.click(() => {
             if(!gameOver) {
                 boardAfterPlay(i);
+                playSound('short_tone_001');
             }
         });
 
@@ -356,31 +350,8 @@ function showTimer(mm, ss) {
     timer.text(`${mm} : ${ss}`);
 }
 
-// format Date.now()
-function formatDate(date) {
-    let d = new Date(date),
-        year = d.getFullYear(),
-        month = '' + (d.getMonth() + 1),
-        day = '' + d.getDate();
-
-    if (month.length < 2)
-        month = '0' + month;
-    if (day.length < 2)
-        day = '0' + day;
-
-    return [day, month, year].join('/');
-}
-
-function formatTime(time) {
-    let t = new Date(time),
-        hour = t.getHours(),
-        min = '' + t.getMinutes(),
-        sec = '' + t.getSeconds();
-
-    if (min.length < 2)
-        min = '0' + min;
-    if (sec.length < 2)
-        sec = '0' + sec;
-
-    return [hour, min, sec].join(':');
+// SOUNDS
+function playSound(soundName) {
+    let audio = new Audio(`audio/${soundName}.mp3`);
+    audio.play();
 }
