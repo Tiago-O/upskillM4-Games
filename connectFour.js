@@ -10,7 +10,7 @@ let board = [
     [0,0,0,0,0,0,0]
 ];
 
-// // load history from Local Storage
+// load history from Local Storage
 let retrievedData = localStorage.getItem('history');
 let history = JSON.parse(retrievedData);
 if(!history) {
