@@ -42,6 +42,7 @@ function boardAfterPlay(iPlay) {
                 // victory
                 gameOver = true;
                 victoryBox.show();
+                playSound('success_003');
 
                 // text in victory box
                 let victor;
@@ -55,7 +56,7 @@ function boardAfterPlay(iPlay) {
 
                 // update history list with an object
                 history.push({
-                    game: 'connect-four',
+                    game: 'Connect Four',
                     winner: victor,
                     player1: player1InputName.val(),
                     player2: player2InputName.val(),
@@ -72,6 +73,7 @@ function boardAfterPlay(iPlay) {
                 gameOver = true;
                 victoryBox.show();
                 winPlayerName.text('It is a draw.')
+                playSound('success_001');
 
                 // stops setInterval
                 clearInterval(intervalId);
@@ -193,7 +195,7 @@ function newGameGrid() {
         col.click(() => {
             if(!gameOver) {
                 boardAfterPlay(i);
-                playSound('short_tone_001');
+                playSound('short_tone_004');
             }
         });
 
@@ -220,7 +222,6 @@ let boxPlayer2DivName = $('#name-player2');
 
 let victoryBox = $('#box-win');
 let playAgain = $('#box-win-play-again-button');
-let goToMenu = $('#box-win-menu-button');
 
 if (connectFourMenu.show()) {
     gameArea.hide();
@@ -265,28 +266,6 @@ startGameButton.click(function () {
     startTimer();
     // game is ON
     gameOver = false;
-});
-
-// END GAME / Go To MENU Button
-goToMenu.click(function () {
-    // clean board
-    board = [
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0],
-        [0,0,0,0,0,0,0]
-    ];
-    $(".connect-four-row").empty()
-
-    // clean players names in input boxes
-    player1InputName.val('');
-    player2InputName.val('');
-
-    gameArea.hide();
-    victoryBox.hide();
-    connectFourMenu.show(); // show menu of all games !!!
 });
 
 // END GAME / PLAY AGAIN Button
