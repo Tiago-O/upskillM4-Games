@@ -9,12 +9,14 @@
 </head>
 <body>
 
-    <div class="container text-center mt-2 w-100">
+    <div class="container text-center mt-2 w-75">
         <h1 class="mb-5">History</h1>
 
-        <a type="button" href="menu.html" class="btn btn-outline-secondary w-75 my-2">Return to Menu</a>
+        <div class="container my-2">
+            <a type="button" href="menu.html" class="btn btn-outline-secondary w-100">Return to Menu</a>
+        </div>
 
-        <div id="history-box" class="container w-75 my-5"></div>
+        <div id="history-box" class="container my-5"></div>
 
     </div>
 
@@ -38,73 +40,47 @@
             <div class="text-center my-2">
                 <h5>Nothing Ever Played :(</h5>
             </div>
-        `)
+        `);
 
     } else {
 
         for (let i = history.length - 1; i >= 0; i--) {
             let gameRecord = history[i];
 
-            if (history[i].winner === history[i].player1) {
-
-                divHistoryBox.append(`
-                    <div class="border border-secondary my-4">
-                        <div class="text-center my-2">
-                            <h5>${gameRecord.game}</h5>
-                        </div>
-                        <div class="d-flex justify-content-around w-100 my-2">
-                            <div class="border border-4 border-success w-50">${gameRecord.player1}</div>
-                            <div class="w-50">${gameRecord.player2}</div>
-                        </div>
-                        <div class="my-2">
-                            <div>Game Time: ${gameRecord.gameTime}</div>
-                        </div>
-                        <div class="my-2">
-                            <div>played ${formatDate(gameRecord.timestamp)} at ${formatTime(gameRecord.timestamp)}</div>
-                        </div>
+            divHistoryBox.append(`
+                <div class="border border-secondary my-4">
+                    <div class="text-center my-2">
+                        <h5>${gameRecord.game}</h5>
                     </div>
-                `)
-
-            } else if (history[i].winner === history[i].player2) {
-
-                divHistoryBox.append(`
-                    <div class="border border-secondary my-4">
-                        <div class="text-center my-2">
-                            <h5>${gameRecord.game}</h5>
-                        </div>
-                        <div class="d-flex justify-content-around w-100 my-2">
-                            <div class="w-50">${gameRecord.player1}</div>
-                            <div class="border border-4 border-success w-50">${gameRecord.player2}</div>
-                        </div>
-                        <div class="my-2">
-                            <div>Game Time: ${gameRecord.gameTime}</div>
-                        </div>
-                        <div class="my-2">
-                            <div>played ${formatDate(gameRecord.timestamp)} at ${formatTime(gameRecord.timestamp)}</div>
-                        </div>
+                    <div class="d-flex justify-content-around w-100 my-2">
+                        <div class="player1-history-box w-50">${gameRecord.player1}</div>
+                        <div class="player2-history-box w-50">${gameRecord.player2}</div>
                     </div>
-                `)
-
-            } else { // draw
-                divHistoryBox.append(`
-                    <div class="border border-secondary my-4">
-                        <div class="text-center my-2">
-                            <h5>${gameRecord.game}</h5>
-                        </div>
-                        <div class="d-flex justify-content-around w-100 my-2">
-                            <div class="w-50">${gameRecord.player1}</div>
-                            <div class="w-50">${gameRecord.player2}</div>
-                        </div>
-                        <div class="my-2">
-                            <div>Game Time: ${gameRecord.gameTime}</div>
-                        </div>
-                        <div class="my-2">
-                            <div>played ${formatDate(gameRecord.timestamp)} at ${formatTime(gameRecord.timestamp)}</div>
-                        </div>
+                    <div class="my-2">
+                        <div>Game Time: ${gameRecord.gameTime}</div>
                     </div>
-                `)
+                    <div class="my-2">
+                        <div>played ${formatDate(gameRecord.timestamp)} at ${formatTime(gameRecord.timestamp)}</div>
+                    </div>
+                </div>
+            `);
+
+            if (gameRecord.winner === gameRecord.player1) {
+                $('.player1-history-box').eq(indexReverse(history.length, i)).addClass('border border-4 border-success');
+            } else {
+                $('.player2-history-box').eq(indexReverse(history.length, i)).addClass('border border-4 border-success');
             }
         }
+    }
+
+    // to get the mirror side of the index
+    // indexes = 0...5, len = 6, if 0 > 5, 1 > 4, ... , 5 > 0
+    function indexReverse(length, i) {
+        let a = [];
+        for (let i = 0; i < length; i++) {
+            a.push(i);
+        }
+        return a.reverse()[i];
     }
 
     // format Date.now()
