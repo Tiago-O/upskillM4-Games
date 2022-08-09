@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Jogo memória</title>
+    <title>Memory Game</title>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Ubuntu:wght@300;400;500&display=swap" rel="stylesheet">
@@ -222,9 +222,9 @@
     let playerName = $('#playerName');
     let body = $('body');
     let form = $('form');
-    let gameOver = false
     let cardValues = [];
     // Timer variables
+    let setTimer;
     let minutes = '00';
     let seconds = '00';
     // Input values
@@ -277,17 +277,15 @@ function startTimer() {
     let timer = $('#timer');
     timer.text(`${minutes} : ${seconds}`);
 
-    setInterval(function() {
-        if (gameOver === false) {
-            seconds++;
-            if (seconds < 10) {
-                seconds = '0' + seconds;
-            } else if (seconds === 60) {
-                seconds = '00'
-                minutes++;
-                if (minutes < 10) {
-                    minutes = '0' + minutes;
-                }
+    setTimer = setInterval(function() {
+        seconds++;
+        if (seconds < 10) {
+            seconds = '0' + seconds;
+        } else if (seconds === 60) {
+            seconds = '00'
+            minutes++;
+            if (minutes < 10) {
+                minutes = '0' + minutes;
             }
         }
         timer.text(`${minutes} : ${seconds}`);
@@ -449,7 +447,7 @@ function displayCards(rows, columns) {
                             cardCellSelection[1] = -1
                             cardSelectionId = [-1,-1]
                             if(checkGameIsOver(rows, columns) === true) {
-                                gameOver = true;
+                                clearInterval(setTimer);
                                 displayPopUp();
                                 gameHistoryReport();
                             }
@@ -482,8 +480,8 @@ function displayPopUp() {
     $(`h2`).before(`<div id='pop-up'>
         <h1>Congratulations!</h1>
         <span>
-            <button type="button" href="memoryGame.html">Restart</button>
-            <button type="button" href="#">Menu</button>
+            <button type="button">Restart</button>
+            <button type="button">Menu</button>
         </span>
     </div>`)
     playSound('end');
