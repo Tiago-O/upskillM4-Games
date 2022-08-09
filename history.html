@@ -14,7 +14,7 @@
         <h1 class="mb-5">History</h1>
 
         <div class="container my-2">
-            <a type="button" href="menu.html" class="btn btn-outline-secondary w-100">Return to Menu <i class="bi bi-list"></i></a>
+            <a type="button" href="menu.html" class="btn btn-outline-secondary w-100">Return to Menu &nbsp <i class="bi bi-list"></i></a>
         </div>
 
         <div id="history-box" class="container my-5"></div>
@@ -35,7 +35,7 @@
 
     let divHistoryBox = $('#history-box');
 
-    if (history === []) {
+    if (history.length === 0) {
 
         divHistoryBox.append(`
             <div class="text-center my-2">
@@ -67,9 +67,9 @@
             `);
 
             if (gameRecord.winner === gameRecord.player1) {
-                $('.player1-history-box').eq(indexReverse(history.length, i)).addClass('border border-4 border-success');
+                $('.player1-history-box').eq(indexReverse(history.length, i)).addClass('border border-4 border-success').prepend('<i class="bi bi-trophy-fill"></i> &nbsp');
             } else {
-                $('.player2-history-box').eq(indexReverse(history.length, i)).addClass('border border-4 border-success');
+                $('.player2-history-box').eq(indexReverse(history.length, i)).addClass('border border-4 border-success').prepend('<i class="bi bi-trophy-fill"></i> &nbsp');
             }
         }
     }
