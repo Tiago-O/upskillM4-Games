@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Connect Four</title>
+    <link rel="icon" type="image/x-icon" href="images/icons8-game-controller-96.png">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.9.1/font/bootstrap-icons.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
@@ -27,13 +28,18 @@
             </div>
 
             <div class="row">
-                <button type="button" id="start-game" class="btn btn-outline-secondary w-100 my-4">Start Game &nbsp <i class="bi bi-joystick"></i></button>
+                <a type="button" href="#" id="start-game" class="d-flex btn btn-outline-secondary w-100 my-4">
+                    <span class="w-100">Start Game</span>
+                    <span><i class="bi bi-joystick"></i></span>
+                </a>
             </div>
 
             <div class="row">
-                <a type="button" href="menu.html" class="btn btn-outline-secondary w-100 my-4">Return to Menu &nbsp <i class="bi bi-list"></i></a>
+                <a type="button" href="menu.html" class="d-flex btn btn-outline-secondary w-100 my-4">
+                    <span class="w-100">Return to Menu</span>
+                    <span><i class="bi bi-list"></i></span>
+                </a>
             </div>
-
         </form>
     </div>
 
@@ -63,10 +69,16 @@
             <div id="win-player-name" class="col"></div>
         </div>
         <div class="row m-3">
-            <button type="button" id="box-win-play-again-button" class="btn btn-outline-secondary col">Play Again &nbsp <i class="bi bi-joystick"></i></button>
+            <a type="button" id="box-win-play-again-button" href="#" class="d-flex btn btn-outline-secondary col">
+                <span class="w-100">Play Again</span>
+                <span><i class="bi bi-joystick"></i></span>
+            </a>
         </div>
         <div class="row m-3">
-            <a type="button" href="menu.html" class="btn btn-outline-secondary col">Go to Menu &nbsp <i class="bi bi-list"></i></a>
+            <a type="button" href="menu.html" class="d-flex btn btn-outline-secondary col">
+                <span class="w-100">Go to Menu</span>
+                <span><i class="bi bi-list"></i></span>
+            </a>
         </div>
     </div>
 
